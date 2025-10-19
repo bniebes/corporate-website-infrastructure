@@ -2,6 +2,7 @@
 
 locals {
   sub_regions = toset(["us-east-2"])
+  ecr_force_delete = true
 }
 
 # main-region #########################################################################################################
@@ -12,6 +13,7 @@ module "main-region-frankfurt" {
     aws = aws.eu-central-1
   }
   sub_regions = local.sub_regions
+  ecr_force_delete = local.ecr_force_delete
 }
 
 # sub-regions ########################################################################################################
@@ -25,4 +27,5 @@ module "sub-region-ohio" {
   providers = {
     aws = aws.us-east-2
   }
+  ecr_force_delete = local.ecr_force_delete
 }

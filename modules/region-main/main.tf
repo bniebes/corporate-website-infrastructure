@@ -9,13 +9,19 @@ terraform {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 variable "sub_regions" {
   type        = set(string)
   nullable    = false
   description = "Active sub regions"
 }
 
-data "aws_caller_identity" "current" {}
+variable "ecr_force_delete" {
+  type        = bool
+  default     = false
+  description = "AWS ECR force delete"
+}
 
 # AWS ECR #############################################################################################################
 
@@ -25,7 +31,7 @@ resource "aws_ecr_repository" "ecr_main" {
   image_scanning_configuration {
     scan_on_push = false
   }
-  force_delete = false
+  force_delete = var.ecr_force_delete
 }
 
 resource "aws_ecr_replication_configuration" "ecr_main" {

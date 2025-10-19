@@ -9,6 +9,12 @@ terraform {
   }
 }
 
+variable "ecr_force_delete" {
+  type        = bool
+  default     = false
+  description = "AWS ECR force delete"
+}
+
 # AWS ECR #############################################################################################################
 
 resource "aws_ecr_repository" "ecr_sub" {
@@ -17,7 +23,7 @@ resource "aws_ecr_repository" "ecr_sub" {
   image_scanning_configuration {
     scan_on_push = false
   }
-  force_delete = false
+  force_delete = var.ecr_force_delete
 }
 
 # AWS IAM #############################################################################################################
