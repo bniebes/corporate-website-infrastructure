@@ -37,18 +37,6 @@ variable "initial_deployment" {
   description = "Initial deployment of ressources"
 }
 
-variable "initial_deployment_image_identifier" {
-  type        = string
-  default     = "public.ecr.aws/aws-containers/hello-app-runner:latest"
-  description = "Initial deployment image identifier"
-}
-
-variable "initial_deployment_repository_type" {
-  type        = string
-  default     = "ECR_PUBLIC"
-  description = "Initial deployment repository type"
-}
-
 variable "image_name" {
   type    = string
   default = "corporate-website"
@@ -125,28 +113,19 @@ resource "aws_iam_role_policy_attachment" "policy_apprunner_ecr" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
 
-resource "time_sleep" "wait_role_create" {
-  depends_on      = [aws_iam_role.role_apprunner_ecr]
-  create_duration = "30s"
-}
-
 resource "aws_apprunner_service" "corporate_website" {
+  count        = var.initial_deployment ? 0 : 1
   service_name = "corporate-website-${data.aws_region.current.region}"
-  depends_on   = [time_sleep.wait_role_create]
 
   source_configuration {
 
-    # Only add authentication configuration if not initial deployment
-    dynamic "authentication_configuration" {
-      count = var.initial_deployment ? 0 : 1
-      content {
-        access_role_arn = aws_iam_role.role_apprunner_ecr.arn
-      }
+    authentication_configuration {
+      access_role_arn = aws_iam_role.role_apprunner_ecr.arn
     }
 
     image_repository {
-      image_identifier      = var.initial_deployment ? var.initial_deployment_image_identifier : "${aws_ecr_repository.ecr_sub.repository_url}/${var.image_name}:${var.image_tag}"
-      image_repository_type = var.initial_deployment ? var.initial_deployment_repository_type : "ECR"
+      image_identifier      = "${aws_ecr_repository.ecr_sub.repository_url}/${var.image_name}:${var.image_tag}"
+      image_repository_type = "ECR"
       image_configuration {
         port = "30123"
       }
@@ -175,6 +154,8 @@ resource "aws_apprunner_service" "corporate_website" {
 }
 
 resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_auto_scaling" {
+  count = var.initial_deployment ? 0 : 1
+
   auto_scaling_configuration_name = "corporate-website-auto-scaling"
 
   max_concurrency = var.auto_scaling_max_concurrency
@@ -185,19 +166,21 @@ resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_a
 # AWS Route53 #########################################################################################################
 
 resource "aws_route53_record" "subdomain_sub" {
+  count   = var.initial_deployment ? 0 : 1
   zone_id = var.zone_id
   name    = "${data.aws_region.current.region}.${var.domain_name}"
   type    = "CNAME"
   ttl     = 300
-  records = [aws_apprunner_service.corporate_website.service_url]
+  records = [aws_apprunner_service.corporate_website[count.index].service_url]
 }
 
 resource "aws_route53_record" "rootdomain_sub" {
+  count          = var.initial_deployment ? 0 : 1
   zone_id        = var.zone_id
   name           = var.domain_name
   type           = "CNAME"
   ttl            = 60
-  records        = [aws_apprunner_service.corporate_website.service_url]
+  records        = [aws_apprunner_service.corporate_website[count.index].service_url]
   set_identifier = data.aws_region.current.region
 
   latency_routing_policy {
