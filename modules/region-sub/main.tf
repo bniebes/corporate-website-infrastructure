@@ -43,6 +43,24 @@ variable "instance_memory" {
   description = "App Runner Instance Memory"
 }
 
+variable "auto_scaling_max_concurrency" {
+  type = number
+  default = 100
+  description = "App Runner Auto Scaling Max Concurrency. (Number of Concurrent requests)"
+}
+
+variable "auto_scaling_max_size" {
+  type = number
+  default = 10
+  description = "App Runner Auto Scaling Max Size"
+}
+
+variable "auto_scaling_min_size" {
+  type = number
+  default = 1
+  description = "App Runner Auto Scaling Min Size"
+}
+
 # AWS ECR #############################################################################################################
 
 resource "aws_ecr_repository" "ecr_sub" {
@@ -122,6 +140,14 @@ resource "aws_apprunner_service" "corporate_website" {
     Image    = "corporate-website"
     ImageTag = "prod"
   }
+}
+
+resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_auto_scaling" {
+  auto_scaling_configuration_name = "corporate-website-auto-scaling"
+
+  max_concurrency = var.auto_scaling_max_concurrency
+  max_size = var.auto_scaling_max_size
+  min_size = var.auto_scaling_min_size
 }
 
 # AWS Route53 #########################################################################################################

@@ -6,6 +6,9 @@ locals {
   domain_name = "corporate-website.devbn.de"
   cpu = 1024
   memory = 512
+  auto_scaling_max_concurrency = 200
+  auto_scaling_max_size = 5
+  auto_scaling_min_size = 1
 }
 
 # main-region #########################################################################################################
@@ -18,8 +21,12 @@ module "main-region-frankfurt" {
   sub_regions = local.sub_regions
   ecr_force_delete = local.ecr_force_delete
   domain_name = local.domain_name
+  # AWS AppRunner
   instance_cpu = local.cpu
   instance_memory = local.memory
+  auto_scaling_max_concurrency = local.auto_scaling_max_concurrency
+  auto_scaling_max_size = local.auto_scaling_max_size
+  auto_scaling_min_size = local.auto_scaling_min_size
 }
 
 # sub-regions ########################################################################################################
@@ -36,6 +43,10 @@ module "sub-region-ohio" {
   ecr_force_delete = local.ecr_force_delete
   domain_name = local.domain_name
   zone_id = module.main-region-frankfurt.hosted_zone_id
+  # AWS AppRunner
   instance_cpu = local.cpu
   instance_memory = local.memory
+  auto_scaling_max_concurrency = local.auto_scaling_max_concurrency
+  auto_scaling_max_size = local.auto_scaling_max_size
+  auto_scaling_min_size = local.auto_scaling_min_size
 }
