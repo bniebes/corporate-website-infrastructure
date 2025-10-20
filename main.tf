@@ -3,7 +3,7 @@
 locals {
   sub_regions        = toset(["us-east-2"])
   ecr_force_delete   = true
-  domain_name        = "corporate-website.devbn.de"
+  domain_name        = "devbn.de"
   initial_deployment = true
   image_name         = "corporate-website"
   image_tag          = "2025-1"
