@@ -9,75 +9,9 @@ terraform {
   }
 }
 
-# Data #############################################################################################################
-
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
-
-# Variables #############################################################################################################
-
-variable "sub_regions" {
-  type        = set(string)
-  nullable    = false
-  description = "Active sub regions"
-}
-
-variable "ecr_force_delete" {
-  type        = bool
-  default     = false
-  description = "AWS ECR force delete"
-}
-
-variable "domain_name" {
-  type        = string
-  description = "Root domain name"
-}
-
-variable "initial_deployment" {
-  type        = bool
-  default     = false
-  description = "Initial deployment of ressources"
-}
-
-variable "image_name" {
-  type    = string
-  default = "corporate-website"
-}
-
-variable "image_tag" {
-  type    = string
-  default = "latest"
-}
-variable "instance_cpu" {
-  type        = string
-  default     = "1 vCPU"
-  description = "App Runner Instance CPU"
-}
-
-variable "instance_memory" {
-  type        = string
-  default     = "0.5 GB"
-  description = "App Runner Instance Memory"
-}
-
-variable "auto_scaling_max_concurrency" {
-  type        = number
-  default     = 100
-  description = "App Runner Auto Scaling Max Concurrency. (Number of Concurrent requests)"
-}
-
-variable "auto_scaling_max_size" {
-  type        = number
-  default     = 10
-  description = "App Runner Auto Scaling Max Size"
-}
-
-variable "auto_scaling_min_size" {
-  type        = number
-  default     = 1
-  description = "App Runner Auto Scaling Min Size"
-}
 
 # AWS ECR #############################################################################################################
 
@@ -254,33 +188,4 @@ resource "aws_route53_record" "rootdomain_main" {
   latency_routing_policy {
     region = data.aws_region.current.region
   }
-}
-
-# Outputs #############################################################################################################
-
-output "hosted_zone_id" {
-  description = "Route 53 Hosted Zone ID"
-  value       = aws_route53_zone.main.zone_id
-}
-
-output "name_servers" {
-  description = "Name servers for the hosted zone - update these at your domain registrar"
-  value       = aws_route53_zone.main.name_servers
-}
-
-output "user_name" {
-  value       = aws_iam_user.cicd_user.name
-  description = "IAM username for CI/CD"
-}
-
-output "access_key_id" {
-  value       = aws_iam_access_key.cicd_user_key.id
-  description = "Access key ID for CI/CD user"
-  sensitive   = true
-}
-
-output "secret_access_key" {
-  value       = aws_iam_access_key.cicd_user_key.secret
-  description = "Secret access key for CI/CD user"
-  sensitive   = true
 }
