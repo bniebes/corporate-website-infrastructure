@@ -34,6 +34,24 @@ variable "domain_name" {
   description = "Root domain name"
 }
 
+variable "initial_deployment" {
+  type        = bool
+  default     = false
+  description = "Initial deployment of ressources"
+}
+
+variable "initial_deployment_image_identifier" {
+  type        = string
+  default     = "public.ecr.aws/aws-containers/hello-app-runner:latest"
+  description = "Initial deployment image identifier"
+}
+
+variable "initial_deployment_repository_type" {
+  type        = string
+  default     = "ECR_PUBLIC"
+  description = "Initial deployment repository type"
+}
+
 variable "image_name" {
   type    = string
   default = "corporate-website"
@@ -187,8 +205,8 @@ resource "aws_apprunner_service" "corporate_website" {
     }
 
     image_repository {
-      image_identifier      = "${aws_ecr_repository.ecr_main.repository_url}/${var.image_name}:${var.image_tag}"
-      image_repository_type = "ECR"
+      image_identifier      = var.initial_deployment ? var.initial_deployment_image_identifier : "${aws_ecr_repository.ecr_main.repository_url}/${var.image_name}:${var.image_tag}"
+      image_repository_type = var.initial_deployment ? var.initial_deployment_repository_type : "ECR"
       image_configuration {
         port = "30123"
       }
