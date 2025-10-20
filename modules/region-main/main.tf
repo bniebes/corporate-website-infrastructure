@@ -35,14 +35,14 @@ variable "domain_name" {
 }
 
 variable "instance_cpu" {
-  type = number
-  default = 1
+  type = string
+  default = "1 vCPU"
   description = "App Runner Instance CPU"
 }
 
 variable "instance_memory" {
-  type = number
-  default = 512
+  type = string
+  default = "0.5 GB"
   description = "App Runner Instance Memory"
 }
 

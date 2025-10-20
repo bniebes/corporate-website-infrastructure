@@ -4,8 +4,10 @@ locals {
   sub_regions = toset(["us-east-2"])
   ecr_force_delete = true
   domain_name = "corporate-website.devbn.de"
-  cpu = 1024
-  memory = 512
+  # Supported combinations for cpu and memory:
+  # https://docs.aws.amazon.com/apprunner/latest/dg/architecture.html#architecture.vcpu-memory
+  cpu = "1 vCPU"
+  memory = "2 GB"
   auto_scaling_max_concurrency = 200
   auto_scaling_max_size = 5
   auto_scaling_min_size = 1
