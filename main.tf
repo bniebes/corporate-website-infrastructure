@@ -4,6 +4,8 @@ locals {
   sub_regions      = toset(["us-east-2"])
   ecr_force_delete = true
   domain_name      = "corporate-website.devbn.de"
+  image_name       = "corporate-website"
+  image_tag        = "2025-1"
   # Supported combinations for cpu and memory:
   # https://docs.aws.amazon.com/apprunner/latest/dg/architecture.html#architecture.vcpu-memory
   cpu                          = "1 vCPU"
@@ -20,10 +22,11 @@ module "main-region-frankfurt" {
   providers = {
     aws = aws.eu-central-1
   }
-  sub_regions      = local.sub_regions
-  ecr_force_delete = local.ecr_force_delete
-  domain_name      = local.domain_name
-  # AWS AppRunner
+  sub_regions                  = local.sub_regions
+  ecr_force_delete             = local.ecr_force_delete
+  domain_name                  = local.domain_name
+  image_name                   = local.image_name
+  image_tag                    = local.image_tag
   instance_cpu                 = local.cpu
   instance_memory              = local.memory
   auto_scaling_max_concurrency = local.auto_scaling_max_concurrency
@@ -42,10 +45,11 @@ module "sub-region-ohio" {
   providers = {
     aws = aws.us-east-2
   }
-  ecr_force_delete = local.ecr_force_delete
-  domain_name      = local.domain_name
-  zone_id          = module.main-region-frankfurt.hosted_zone_id
-  # AWS AppRunner
+  ecr_force_delete             = local.ecr_force_delete
+  domain_name                  = local.domain_name
+  zone_id                      = module.main-region-frankfurt.hosted_zone_id
+  image_name                   = local.image_name
+  image_tag                    = local.image_tag
   instance_cpu                 = local.cpu
   instance_memory              = local.memory
   auto_scaling_max_concurrency = local.auto_scaling_max_concurrency

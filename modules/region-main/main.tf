@@ -34,6 +34,15 @@ variable "domain_name" {
   description = "Root domain name"
 }
 
+variable "image_name" {
+  type    = string
+  default = "corporate-website"
+}
+
+variable "image_tag" {
+  type    = string
+  default = "latest"
+}
 variable "instance_cpu" {
   type        = string
   default     = "1 vCPU"
@@ -178,14 +187,14 @@ resource "aws_apprunner_service" "corporate_website" {
     }
 
     image_repository {
-      image_identifier      = "${aws_ecr_repository.ecr_main.repository_url}/corporate-website:prod"
+      image_identifier      = "${aws_ecr_repository.ecr_main.repository_url}/${var.image_name}:${var.image_tag}"
       image_repository_type = "ECR"
       image_configuration {
         port = "30123"
       }
     }
 
-    auto_deployments_enabled = true
+    auto_deployments_enabled = false
   }
 
   instance_configuration {
