@@ -111,6 +111,15 @@ resource "aws_iam_user_policy_attachment" "cicd_user_ecr_push" {
 
 # AWS App Runner ######################################################################################################
 
+resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_auto_scaling" {
+  count                           = var.initial_deployment ? 0 : 1
+  auto_scaling_configuration_name = "corporate-website-auto-scaling-${data.aws_region.current.region}"
+
+  max_concurrency = var.auto_scaling_max_concurrency
+  max_size        = var.auto_scaling_max_size
+  min_size        = var.auto_scaling_min_size
+}
+
 resource "aws_apprunner_service" "corporate_website" {
   count        = var.initial_deployment ? 0 : 1
   service_name = "corporate-website-${data.aws_region.current.region}"
@@ -138,6 +147,8 @@ resource "aws_apprunner_service" "corporate_website" {
     memory = var.instance_memory
   }
 
+  auto_scaling_configuration_arn = aws_apprunner_auto_scaling_configuration_version.corporate_website_auto_scaling[count.index].arn
+
   network_configuration {
 
     ingress_configuration {
@@ -150,15 +161,6 @@ resource "aws_apprunner_service" "corporate_website" {
     Image    = "corporate-website"
     ImageTag = "prod"
   }
-}
-
-resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_auto_scaling" {
-  count                           = var.initial_deployment ? 0 : 1
-  auto_scaling_configuration_name = "corporate-website-auto-scaling"
-
-  max_concurrency = var.auto_scaling_max_concurrency
-  max_size        = var.auto_scaling_max_size
-  min_size        = var.auto_scaling_min_size
 }
 
 # AWS Route53 #########################################################################################################
