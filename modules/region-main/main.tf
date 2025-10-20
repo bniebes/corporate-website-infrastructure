@@ -34,6 +34,18 @@ variable "domain_name" {
   description = "Root domain name"
 }
 
+variable "instance_cpu" {
+  type = number
+  default = 1
+  description = "App Runner Instance CPU"
+}
+
+variable "instance_memory" {
+  type = number
+  default = 512
+  description = "App Runner Instance Memory"
+}
+
 # AWS ECR #############################################################################################################
 
 resource "aws_ecr_repository" "ecr_main" {
@@ -156,6 +168,11 @@ resource "aws_apprunner_service" "corporate_website" {
     }
 
     auto_deployments_enabled = true
+  }
+
+  instance_configuration {
+    cpu = var.instance_cpu
+    memory = var.instance_memory
   }
 
   network_configuration {

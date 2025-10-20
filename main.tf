@@ -4,6 +4,8 @@ locals {
   sub_regions = toset(["us-east-2"])
   ecr_force_delete = true
   domain_name = "corporate-website.devbn.de"
+  cpu = 1024
+  memory = 512
 }
 
 # main-region #########################################################################################################
@@ -16,6 +18,8 @@ module "main-region-frankfurt" {
   sub_regions = local.sub_regions
   ecr_force_delete = local.ecr_force_delete
   domain_name = local.domain_name
+  instance_cpu = local.cpu
+  instance_memory = local.memory
 }
 
 # sub-regions ########################################################################################################
@@ -32,4 +36,6 @@ module "sub-region-ohio" {
   ecr_force_delete = local.ecr_force_delete
   domain_name = local.domain_name
   zone_id = module.main-region-frankfurt.hosted_zone_id
+  instance_cpu = local.cpu
+  instance_memory = local.memory
 }
