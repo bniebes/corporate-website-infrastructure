@@ -169,16 +169,7 @@ resource "aws_route53_zone" "main" {
   name = var.domain_name
 }
 
-resource "aws_route53_record" "subdomain_main" {
-  count   = var.initial_deployment ? 0 : 1
-  zone_id = aws_route53_zone.main.zone_id
-  name    = "${data.aws_region.current.region}.${var.domain_name}"
-  type    = "CNAME"
-  ttl     = 300
-  records = [aws_apprunner_service.corporate_website[count.index].service_url]
-}
-
-resource "aws_route53_record" "rootdomain_main" {
+resource "aws_route53_record" "apprunner_domain" {
   count          = var.initial_deployment ? 0 : 1
   zone_id        = aws_route53_zone.main.zone_id
   name           = var.domain_name
