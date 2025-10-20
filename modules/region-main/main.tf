@@ -75,12 +75,62 @@ resource "aws_iam_role" "role_apprunner_ecr" {
   })
 }
 
-# AWS App Runner ######################################################################################################
-
 resource "aws_iam_role_policy_attachment" "policy_apprunner_ecr" {
   role       = aws_iam_role.role_apprunner_ecr.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
+
+resource "aws_iam_user" "cicd_user" {
+  name = "cicd-user-ecr-push"
+  path = "/service-accounts/"
+
+  tags = {
+    Purpose     = "CI/CD"
+    ManagedBy   = "terraform"
+  }
+}
+
+resource "aws_iam_access_key" "cicd_user_key" {
+  user = aws_iam_user.cicd_user.name
+}
+
+resource "aws_iam_policy" "policy_push_ecr" {
+  name        = "policy-push-ecr"
+  description = "Policy for pushing images to ECR"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload"
+        ]
+        Resource = "arn:aws:ecr:*:${data.aws_caller_identity.current.account_id}:repository/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_user_policy_attachment" "cicd_user_ecr_push" {
+  user       = aws_iam_user.cicd_user.name
+  policy_arn = aws_iam_policy.policy_push_ecr.arn
+}
+
+# AWS App Runner ######################################################################################################
 
 resource "time_sleep" "wait_role_create" {
   depends_on      = [aws_iam_role.role_apprunner_ecr]
@@ -159,4 +209,21 @@ output "hosted_zone_id" {
 output "name_servers" {
   description = "Name servers for the hosted zone - update these at your domain registrar"
   value       = aws_route53_zone.main.name_servers
+}
+
+output "user_name" {
+  value       = aws_iam_user.cicd_user.name
+  description = "IAM username for CI/CD"
+}
+
+output "access_key_id" {
+  value       = aws_iam_access_key.cicd_user_key.id
+  description = "Access key ID for CI/CD user"
+  sensitive   = true
+}
+
+output "secret_access_key" {
+  value       = aws_iam_access_key.cicd_user_key.secret
+  description = "Secret access key for CI/CD user"
+  sensitive   = true
 }
