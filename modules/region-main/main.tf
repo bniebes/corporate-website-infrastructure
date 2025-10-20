@@ -16,7 +16,7 @@ data "aws_region" "current" {}
 # AWS ECR #############################################################################################################
 
 resource "aws_ecr_repository" "ecr_main" {
-  name                 = "ecr-main"
+  name                 = "ecr-main-${data.aws_region.current.region}"
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = false
