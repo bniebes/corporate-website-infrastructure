@@ -103,7 +103,7 @@ resource "aws_ecr_repository" "ecr_sub" {
 # AWS IAM #############################################################################################################
 
 resource "aws_iam_role" "role_apprunner_ecr" {
-  name = "role-apprunner-ecr"
+  name = "role-apprunner-ecr-${data.aws_region.current.region}"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -131,7 +131,7 @@ resource "time_sleep" "wait_role_create" {
 }
 
 resource "aws_apprunner_service" "corporate_website" {
-  service_name = "corporate-website"
+  service_name = "corporate-website-${data.aws_region.current.region}"
   depends_on   = [time_sleep.wait_role_create]
 
   source_configuration {
