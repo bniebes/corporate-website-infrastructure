@@ -202,7 +202,7 @@ resource "aws_apprunner_service" "corporate_website" {
 
     # Only add authentication configuration if not initial deployment
     dynamic "authentication_configuration" {
-      for_each = var.initial_deployment ? [] : [1]
+      count = var.initial_deployment ? 0 : 1
       content {
         access_role_arn = aws_iam_role.role_apprunner_ecr.arn
       }
