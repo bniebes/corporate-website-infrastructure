@@ -9,10 +9,26 @@ terraform {
   }
 }
 
+# Data #############################################################################################################
+
+data "aws_region" "current" {}
+
+# Variables #############################################################################################################
+
 variable "ecr_force_delete" {
   type        = bool
   default     = false
   description = "AWS ECR force delete"
+}
+
+variable "domain_name" {
+  type = string
+  description = "Root domain name"
+}
+
+variable "zone_id" {
+  type = string
+  description = "Route53 hosted zone id"
 }
 
 # AWS ECR #############################################################################################################
@@ -88,5 +104,28 @@ resource "aws_apprunner_service" "corporate_website" {
     Name     = "corporate-website-apprunner-service"
     Image    = "corporate-website"
     ImageTag = "prod"
+  }
+}
+
+# AWS Route53 #########################################################################################################
+
+resource "aws_route53_record" "subdomain_sub" {
+  zone_id = var.zone_id
+  name    = "${data.aws_region.current.region}.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_apprunner_service.corporate_website.service_url]
+}
+
+resource "aws_route53_record" "rootdomain_sub" {
+  zone_id        = var.zone_id
+  name           = var.domain_name
+  type           = "CNAME"
+  ttl            = 60
+  records        = [aws_apprunner_service.corporate_website.service_url]
+  set_identifier = data.aws_region.current.region
+
+  latency_routing_policy {
+    region = data.aws_region.current.region
   }
 }

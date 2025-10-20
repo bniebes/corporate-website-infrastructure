@@ -9,7 +9,13 @@ terraform {
   }
 }
 
+# Data #############################################################################################################
+
 data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
+# Variables #############################################################################################################
 
 variable "sub_regions" {
   type        = set(string)
@@ -21,6 +27,11 @@ variable "ecr_force_delete" {
   type        = bool
   default     = false
   description = "AWS ECR force delete"
+}
+
+variable "domain_name" {
+  type = string
+  description = "Root domain name"
 }
 
 # AWS ECR #############################################################################################################
@@ -109,4 +120,43 @@ resource "aws_apprunner_service" "corporate_website" {
     Image    = "corporate-website"
     ImageTag = "prod"
   }
+}
+
+# AWS Route53 #########################################################################################################
+
+resource "aws_route53_zone" "main" {
+  name = var.domain_name
+}
+
+resource "aws_route53_record" "subdomain_main" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "${data.aws_region.current.region}.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = [aws_apprunner_service.corporate_website.service_url]
+}
+
+resource "aws_route53_record" "rootdomain_main" {
+  zone_id        = aws_route53_zone.main.zone_id
+  name           = var.domain_name
+  type           = "CNAME"
+  ttl            = 60
+  records        = [aws_apprunner_service.corporate_website.service_url]
+  set_identifier = data.aws_region.current.region
+
+  latency_routing_policy {
+    region = data.aws_region.current.region
+  }
+}
+
+# Outputs #############################################################################################################
+
+output "hosted_zone_id" {
+  description = "Route 53 Hosted Zone ID"
+  value       = aws_route53_zone.main.zone_id
+}
+
+output "name_servers" {
+  description = "Name servers for the hosted zone - update these at your domain registrar"
+  value       = aws_route53_zone.main.name_servers
 }
