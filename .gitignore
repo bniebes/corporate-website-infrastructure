@@ -2,6 +2,7 @@
 .terraform.lock.hcl
 terraform.tfstate
 terraform.tfstate.*
+.terraform.tfstate.lock.info
 **/.terraform/*
 *.auto.tfvars
 *.tfoverride

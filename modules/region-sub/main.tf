@@ -22,42 +22,42 @@ variable "ecr_force_delete" {
 }
 
 variable "domain_name" {
-  type = string
+  type        = string
   description = "Root domain name"
 }
 
 variable "zone_id" {
-  type = string
+  type        = string
   description = "Route53 hosted zone id"
 }
 
 variable "instance_cpu" {
-  type = string
-  default = "1 vCPU"
+  type        = string
+  default     = "1 vCPU"
   description = "App Runner Instance CPU"
 }
 
 variable "instance_memory" {
-  type = string
-  default = "0.5 GB"
+  type        = string
+  default     = "0.5 GB"
   description = "App Runner Instance Memory"
 }
 
 variable "auto_scaling_max_concurrency" {
-  type = number
-  default = 100
+  type        = number
+  default     = 100
   description = "App Runner Auto Scaling Max Concurrency. (Number of Concurrent requests)"
 }
 
 variable "auto_scaling_max_size" {
-  type = number
-  default = 10
+  type        = number
+  default     = 10
   description = "App Runner Auto Scaling Max Size"
 }
 
 variable "auto_scaling_min_size" {
-  type = number
-  default = 1
+  type        = number
+  default     = 1
   description = "App Runner Auto Scaling Min Size"
 }
 
@@ -124,7 +124,7 @@ resource "aws_apprunner_service" "corporate_website" {
   }
 
   instance_configuration {
-    cpu = var.instance_cpu
+    cpu    = var.instance_cpu
     memory = var.instance_memory
   }
 
@@ -146,8 +146,8 @@ resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_a
   auto_scaling_configuration_name = "corporate-website-auto-scaling"
 
   max_concurrency = var.auto_scaling_max_concurrency
-  max_size = var.auto_scaling_max_size
-  min_size = var.auto_scaling_min_size
+  max_size        = var.auto_scaling_max_size
+  min_size        = var.auto_scaling_min_size
 }
 
 # AWS Route53 #########################################################################################################
