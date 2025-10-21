@@ -113,7 +113,7 @@ resource "aws_iam_user_policy_attachment" "cicd_user_ecr_push" {
 
 resource "aws_apprunner_auto_scaling_configuration_version" "corporate_website_auto_scaling" {
   count                           = var.initial_deployment ? 0 : 1
-  auto_scaling_configuration_name = "corporate-website-auto-scaling-${data.aws_region.current.region}"
+  auto_scaling_configuration_name = "cw-asc-${data.aws_region.current.region}"
 
   max_concurrency = var.auto_scaling_max_concurrency
   max_size        = var.auto_scaling_max_size
