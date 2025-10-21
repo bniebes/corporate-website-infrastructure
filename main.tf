@@ -51,12 +51,6 @@ output "user_name" {
   value       = module.main-region-frankfurt.user_name
 }
 
-output "user_id" {
-  description = "IAM user id for CI/CD"
-  value       = module.main-region-frankfurt.user_id
-  sensitive   = true
-}
-
 output "access_key_id" {
   description = "Access key ID for CI/CD user"
   value       = module.main-region-frankfurt.access_key_id
