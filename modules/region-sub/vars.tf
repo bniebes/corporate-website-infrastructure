@@ -30,6 +30,11 @@ variable "image_tag" {
   default = "latest"
 }
 
+variable "port" {
+  type    = number
+  default = 30123
+}
+
 variable "instance_cpu" {
   type        = string
   default     = "1 vCPU"

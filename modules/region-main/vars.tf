@@ -30,6 +30,11 @@ variable "image_tag" {
   type    = string
   default = "latest"
 }
+
+variable "port" {
+  type    = number
+  default = 30123
+}
 variable "instance_cpu" {
   type        = string
   default     = "1 vCPU"
@@ -59,4 +64,4 @@ variable "auto_scaling_min_size" {
   default     = 1
   description = "App Runner Auto Scaling Min Size"
 }
-  
+

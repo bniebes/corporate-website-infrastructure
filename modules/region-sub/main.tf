@@ -71,7 +71,11 @@ resource "aws_apprunner_service" "corporate_website" {
       image_identifier      = "${aws_ecr_repository.ecr_sub.repository_url}/${var.image_name}:${var.image_tag}"
       image_repository_type = "ECR"
       image_configuration {
-        port = "30123"
+        port = var.port
+        runtime_environment_variables = {
+          "PORT"   = "${var.port}"
+          "REGION" = "${data.aws_region.current.region}"
+        }
       }
     }
 
