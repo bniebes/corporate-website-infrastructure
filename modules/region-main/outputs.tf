@@ -15,7 +15,7 @@ output "user_name" {
 
 output "user_id" {
   description = "IAM user id for CI/CD"
-  value       = aws_iam_user.cicd_user.id
+  value       = aws_iam_user.cicd_user.unique_id
   sensitive   = true
 }
 
