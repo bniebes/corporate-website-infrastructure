@@ -36,6 +36,33 @@ module "main-region-frankfurt" {
   auto_scaling_min_size        = local.auto_scaling_min_size
 }
 
+output "hosted_zone_id" {
+  description = "Route 53 Hosted Zone ID"
+  value       = module.main-region-frankfurt.hosted_zone_id
+}
+
+output "name_servers" {
+  description = "Name servers for the hosted zone - update these at your domain registrar"
+  value       = module.main-region-frankfurt.name_servers
+}
+
+output "user_name" {
+  description = "IAM username for CI/CD"
+  value       = module.main-region-frankfurt.user_name
+}
+
+output "access_key_id" {
+  description = "Access key ID for CI/CD user"
+  value       = module.main-region-frankfurt.access_key_id
+  sensitive   = true
+}
+
+output "secret_access_key" {
+  description = "Secret access key for CI/CD user"
+  value       = module.main-region-frankfurt.secret_access_key
+  sensitive   = true
+}
+
 # sub-regions ########################################################################################################
 
 ## IMPORTANT
