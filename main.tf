@@ -4,8 +4,8 @@ locals {
   sub_regions        = toset(["us-east-2"])
   ecr_force_delete   = true
   domain_name        = "devbn.de"
-  initial_deployment = true
-  image_name         = "corporate-website"
+  initial_deployment = false
+  repository_name    = "corporate-website"
   image_tag          = "2025-1"
   # Supported combinations for cpu and memory:
   # https://docs.aws.amazon.com/apprunner/latest/dg/architecture.html#architecture.vcpu-memory
@@ -27,7 +27,7 @@ module "main-region-frankfurt" {
   ecr_force_delete             = local.ecr_force_delete
   domain_name                  = local.domain_name
   initial_deployment           = local.initial_deployment
-  image_name                   = local.image_name
+  repository_name              = local.repository_name
   image_tag                    = local.image_tag
   instance_cpu                 = local.cpu
   instance_memory              = local.memory
@@ -78,7 +78,7 @@ module "sub-region-ohio" {
   domain_name                  = local.domain_name
   zone_id                      = module.main-region-frankfurt.hosted_zone_id
   initial_deployment           = local.initial_deployment
-  image_name                   = local.image_name
+  repository_name              = local.repository_name
   image_tag                    = local.image_tag
   instance_cpu                 = local.cpu
   instance_memory              = local.memory

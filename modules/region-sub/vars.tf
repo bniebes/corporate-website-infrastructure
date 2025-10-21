@@ -20,7 +20,7 @@ variable "initial_deployment" {
   description = "Initial deployment of ressources"
 }
 
-variable "image_name" {
+variable "repository_name" {
   type    = string
   default = "corporate-website"
 }

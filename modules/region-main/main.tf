@@ -16,7 +16,7 @@ data "aws_region" "current" {}
 # AWS ECR #############################################################################################################
 
 resource "aws_ecr_repository" "ecr_main" {
-  name                 = "corporate-website"
+  name                 = var.repository_name
   image_tag_mutability = "MUTABLE"
   image_scanning_configuration {
     scan_on_push = false
@@ -132,7 +132,7 @@ resource "aws_apprunner_service" "corporate_website" {
     }
 
     image_repository {
-      image_identifier      = "${aws_ecr_repository.ecr_main.repository_url}/${var.image_name}:${var.image_tag}"
+      image_identifier      = "${aws_ecr_repository.ecr_main.repository_url}:${var.image_tag}"
       image_repository_type = "ECR"
       image_configuration {
         port = var.port
