@@ -89,20 +89,31 @@ resource "aws_apprunner_custom_domain_association" "corporate_website_domain" {
 
 # AWS Route53 #########################################################################################################
 
-resource "aws_route53_record" "apprunner_alias" {
-  depends_on = [aws_apprunner_custom_domain_association.corporate_website_domain]
-
-  zone_id = var.zone_id
-  name    = "corporate-website.${var.domain_name}"
-  type    = "A"
-
-  alias {
-    name                   = aws_apprunner_custom_domain_association.corporate_website_domain.dns_target
-    zone_id                = data.aws_apprunner_hosted_zone_id.current.id
-    evaluate_target_health = true
+resource "aws_route53_record" "apprunner_validation_records" {
+  for_each = {
+    for record in aws_apprunner_custom_domain_association.corporate_website_domain.certificate_validation_records : record.name => record
   }
 
+  zone_id = var.zone_id
+  name    = each.value.name
+  type    = each.value.type
+  records = [each.value.value]
+  ttl     = 300
+}
+
+resource "aws_route53_record" "apprunner_record" {
+  depends_on = [
+    aws_apprunner_custom_domain_association.corporate_website_domain,
+    aws_route53_record.apprunner_validation_records
+  ]
+
+  zone_id        = var.zone_id
+  name           = "corporate-website.${var.domain_name}"
+  type           = "CNAME"
+  ttl            = 60
+  records        = [aws_apprunner_service.corporate_website.service_url]
   set_identifier = "apprunner-${data.aws_region.current.region}-ipv4"
+
   latency_routing_policy {
     region = data.aws_region.current.region
   }
