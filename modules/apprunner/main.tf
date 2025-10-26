@@ -90,14 +90,12 @@ resource "aws_apprunner_custom_domain_association" "corporate_website_domain" {
 # AWS Route53 #########################################################################################################
 
 resource "aws_route53_record" "apprunner_validation_records" {
-  for_each = {
-    for record in aws_apprunner_custom_domain_association.corporate_website_domain.certificate_validation_records : record.name => record
-  }
+  count = 3
 
   zone_id = var.zone_id
-  name    = each.value.name
-  type    = each.value.type
-  records = [each.value.value]
+  name    = tolist(aws_apprunner_custom_domain_association.corporate_website_domain.certificate_validation_records)[count.index].name
+  type    = tolist(aws_apprunner_custom_domain_association.corporate_website_domain.certificate_validation_records)[count.index].type
+  records = [tolist(aws_apprunner_custom_domain_association.corporate_website_domain.certificate_validation_records)[count.index].value]
   ttl     = 300
 }
 
