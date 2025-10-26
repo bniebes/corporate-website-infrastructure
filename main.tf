@@ -4,7 +4,7 @@ locals {
   sub_regions        = toset(["us-east-2"])
   ecr_force_delete   = true
   domain_name        = "devbn.de"
-  initial_deployment = false
+  initial_deployment = true
   repository_name    = "corporate-website"
   image_tag          = "2025-1"
   # Supported combinations for cpu and memory:

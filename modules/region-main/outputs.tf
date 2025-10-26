@@ -24,4 +24,3 @@ output "secret_access_key" {
   value       = aws_iam_access_key.cicd_user_key.secret
   sensitive   = true
 }
-
