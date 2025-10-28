@@ -2,8 +2,6 @@
 
 data "aws_region" "current" {}
 
-data "aws_apprunner_hosted_zone_id" "current" {}
-
 # AWS IAM #############################################################################################################
 
 resource "aws_iam_role" "role_apprunner_ecr" {
