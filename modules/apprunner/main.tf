@@ -85,6 +85,7 @@ resource "aws_apprunner_custom_domain_association" "corporate_website_domain" {
   depends_on  = [aws_apprunner_service.corporate_website]
   service_arn = aws_apprunner_service.corporate_website.arn
   domain_name = "corporate-website.${var.domain_name}"
+  enable_www_subdomain = true
 }
 
 # AWS Route53 #########################################################################################################
