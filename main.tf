@@ -1,7 +1,7 @@
 # corporate-website-infrastructure ####################################################################################
 
 locals {
-  sub_regions        = toset(["us-east-2"])
+  sub_regions        = toset(["us-east-2", "ap-northeast-1", "ap-southeast-1"])
   ecr_force_delete   = true
   domain_name        = "devbn.de"
   initial_deployment = false
@@ -66,7 +66,7 @@ output "secret_access_key" {
 # sub-regions ########################################################################################################
 
 ## IMPORTANT
-## Every region that is declared here has to be put into the set above.
+## Every sub region that is declared here has to be put into the set above.
 ## It is currently not possible to dynamically set providers with a for loop.
 
 module "sub-region-ohio" {
@@ -86,3 +86,47 @@ module "sub-region-ohio" {
   auto_scaling_max_size        = local.auto_scaling_max_size
   auto_scaling_min_size        = local.auto_scaling_min_size
 }
+
+# TODO: Test adding a sub region
+
+module "sub-region-tokyo" {
+  source = "./modules/region-sub"
+  providers = {
+    aws = aws.ap-northeast-1
+  }
+  ecr_force_delete             = local.ecr_force_delete
+  domain_name                  = local.domain_name
+  zone_id                      = module.main-region-frankfurt.hosted_zone_id
+  initial_deployment           = local.initial_deployment
+  repository_name              = local.repository_name
+  image_tag                    = local.image_tag
+  instance_cpu                 = local.cpu
+  instance_memory              = local.memory
+  auto_scaling_max_concurrency = local.auto_scaling_max_concurrency
+  auto_scaling_max_size        = local.auto_scaling_max_size
+  auto_scaling_min_size        = local.auto_scaling_min_size
+}
+
+module "sub-region-singapore" {
+  source = "./modules/region-sub"
+  providers = {
+    aws = aws.ap-southeast-1
+  }
+  ecr_force_delete             = local.ecr_force_delete
+  domain_name                  = local.domain_name
+  zone_id                      = module.main-region-frankfurt.hosted_zone_id
+  initial_deployment           = local.initial_deployment
+  repository_name              = local.repository_name
+  image_tag                    = local.image_tag
+  instance_cpu                 = local.cpu
+  instance_memory              = local.memory
+  auto_scaling_max_concurrency = local.auto_scaling_max_concurrency
+  auto_scaling_max_size        = local.auto_scaling_max_size
+  auto_scaling_min_size        = local.auto_scaling_min_size
+}
+
+# Add additional subregions here
+
+## IMPORTANT
+## Every sub region that is declared here has to be put into the set above.
+## It is currently not possible to dynamically set providers with a for loop.
