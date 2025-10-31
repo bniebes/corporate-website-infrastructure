@@ -23,12 +23,14 @@ resource "aws_ecr_repository" "ecr_main" {
 }
 
 resource "aws_ecr_replication_configuration" "ecr_main" {
-  for_each = var.sub_regions
   replication_configuration {
     rule {
-      destination {
-        region      = each.key
-        registry_id = data.aws_caller_identity.current.account_id
+      dynamic "destination" {
+        for_each = var.sub_regions
+        content {
+          region      = destination.key
+          registry_id = data.aws_caller_identity.current.account_id
+        }
       }
     }
   }
