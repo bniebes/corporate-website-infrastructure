@@ -1,5 +1,22 @@
 # corporate-website-infrastructure ####################################################################################
 
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.2.0"
+    }
+  }
+
+  backend "s3" {
+    bucket       = "terraform-state-bucket-corporate-website"
+    key          = "terraform.tfstate"
+    region       = "eu-central-1" # Main region
+    encrypt      = true
+    use_lockfile = true
+  }
+}
+
 locals {
   sub_regions        = toset(["us-east-2", "ap-northeast-1", "ap-southeast-1"])
   ecr_force_delete   = true
