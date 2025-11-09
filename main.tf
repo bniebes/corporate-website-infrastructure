@@ -104,8 +104,6 @@ module "sub-region-ohio" {
   auto_scaling_min_size        = local.auto_scaling_min_size
 }
 
-# TODO: Test adding a sub region
-
 module "sub-region-tokyo" {
   source = "./modules/region-sub"
   providers = {
